@@ -1,37 +1,135 @@
 # Medimade HMS
 
-Medimade HMS is a production-grade Healthcare / Hospital Management System built with Next.js 15 App Router, TypeScript, Supabase Postgres/Auth/RLS/Storage, Tailwind CSS, shadcn/ui-style components, React Hook Form, Zod, TanStack Table, Recharts, and date-fns.
+Medimade HMS is a full-stack hospital management platform built to manage real healthcare operations across departments, roles, patients, clinical workflows, inventory, billing, and reporting.
 
-The platform is designed for multi-role hospital operations: patient registration, appointments, admissions, rooms, wards, beds, clinical encounters, vitals, diagnoses, treatment plans, prescriptions, lab orders/results, pharmacy inventory, billing, reports, audit logs, and administration.
+The project is designed as a modern healthcare SaaS dashboard: secure, role-aware, responsive, and backed by a relational Supabase Postgres schema with Row Level Security. It demonstrates how a hospital operations system can be structured beyond a basic CRUD app, with modular services, protected server-side workflows, typed validation, audit trails, analytics, and realistic domain boundaries.
+
+## What It Does
+
+Medimade HMS helps hospitals coordinate the operational flow from patient registration through appointments, admissions, treatment, lab work, prescriptions, stock movement, invoicing, and reporting.
+
+Core capabilities include:
+
+- Patient registration, profiles, emergency contacts, insurance details, and clinical timeline
+- Appointment scheduling with doctor availability checks and status workflows
+- Admissions, discharge, ward/room/bed allocation, transfers, and occupancy tracking
+- Doctor, nurse, and staff management with department assignments
+- Clinical encounters, vitals, diagnosis records, notes, and treatment plans
+- Prescription management and pharmacy dispensing workflows
+- Medicine catalog, suppliers, inventory batches, reorder levels, stock movements, low-stock alerts, and expiry alerts
+- Lab test catalog, lab orders, result entry, critical result tracking, and patient timeline integration
+- Billing, invoices, invoice items, tax/discount calculations, partial payments, and payment history
+- Reports for occupancy, revenue, patient growth, appointments, lab workload, and inventory health
+- Notifications, audit logs, protected API routes, and role-based dashboard navigation
+
+## Roles Supported
+
+The platform includes role-based access patterns for:
+
+- `super_admin`
+- `hospital_admin`
+- `doctor`
+- `nurse`
+- `receptionist`
+- `pharmacist`
+- `lab_technician`
+- `billing_staff`
+
+Each role receives scoped navigation and permission-aware access to hospital workflows. The system is designed so users belong to a hospital through their profile, while super admins can operate across hospitals.
 
 ## Tech Stack
 
-- Next.js 15 App Router and React Server Components
-- TypeScript
-- Supabase Postgres, Auth, Row Level Security, and Storage
-- Tailwind CSS and shadcn/ui-style local primitives
-- React Hook Form and Zod validation
-- TanStack Table
-- Recharts
-- date-fns
-- Vercel deployment
+- **Framework:** Next.js 15 App Router
+- **Language:** TypeScript
+- **Database:** Supabase Postgres
+- **Auth:** Supabase Auth
+- **Security:** Supabase Row Level Security and server-side route guards
+- **UI:** Tailwind CSS and shadcn/ui-style components
+- **Forms:** React Hook Form
+- **Validation:** Zod
+- **Tables:** TanStack Table
+- **Charts:** Recharts
+- **Dates:** date-fns
+- **Deployment Target:** Vercel
 
-## Feature Summary
+## Architecture Highlights
 
-- Authentication with Supabase Auth and protected dashboard routes
-- RBAC for `super_admin`, `hospital_admin`, `doctor`, `nurse`, `receptionist`, `pharmacist`, `lab_technician`, and `billing_staff`
-- Hospital-scoped server actions and API route guards
-- Patient management with search, filters, profile overview, clinical timeline, admissions, appointments, prescriptions, labs, and billing history
-- Appointment scheduling with doctor overlap protection and workflow statuses
-- Admissions, wards, rooms, beds, bed assignment, transfer, discharge, and audit logging
-- Clinical encounters, vitals, diagnoses, treatment plans, and notes
-- Pharmacy catalog, suppliers, inventory batches, stock movements, low-stock alerts, expiry alerts, and dispensing logic
-- Lab test catalog, lab orders, multi-test results, critical results, technician workflow
-- Billing, invoices, invoice items, payments, partial payment handling, and print-friendly invoice detail
-- Reports dashboard with occupancy, revenue, inventory, lab, and patient analytics
-- Loading, error, empty, success toast, confirmation dialog, and responsive table states
+Medimade HMS follows a modular architecture intended to stay maintainable as the product grows.
 
-## Local Development
+- **App Router-first routing:** Dashboard pages, auth pages, dynamic patient/admission/appointment routes, and API route handlers live under `app/`.
+- **Server-first data access:** Server Components and server-side helpers are used for protected data fetching wherever possible.
+- **Clean service layer:** Domain services in `lib/services` centralize Supabase access, permission checks, filtering, pagination, and audit logging.
+- **Validation by module:** Zod schemas in `lib/validations` define expected payloads for patients, appointments, admissions, inventory, lab, billing, and staff flows.
+- **Reusable UI:** Forms, tables, cards, charts, modals, badges, empty states, and layout components are split into focused folders under `components/`.
+- **Hospital-scoped tenancy:** Database records are associated with `hospital_id`, and RLS policies enforce tenant boundaries.
+- **Typed domain model:** Shared TypeScript types model roles, database records, common API responses, and workflow states.
+- **Production deployment path:** Environment variables are separated from source control and configured through Vercel for live deployments.
+
+## Security Model
+
+The application is built around secure defaults:
+
+- Dashboard pages require server-side authentication.
+- Authenticated users must have an active profile mapped to a hospital.
+- API routes return consistent success/error responses.
+- Mutations validate payloads with Zod before database writes.
+- Client-supplied hospital IDs are not trusted for guarded operations.
+- Supabase RLS scopes data by hospital membership.
+- `super_admin` policies are separated from hospital-local roles.
+- Audit logs are designed for controlled server-side writes.
+- The Supabase service role key is server-only and must never be exposed to the browser.
+
+## Product Modules
+
+### Patient Management
+
+Patients can be searched, filtered, created, edited, soft deleted, and viewed through a detailed profile. The patient detail experience connects registration data with admissions, appointments, prescriptions, lab history, invoices, and a timeline-style clinical view.
+
+### Appointments
+
+Appointments support scheduled, checked-in, in-progress, completed, cancelled, and no-show states. The scheduling layer includes doctor/department filters and overlap protection for doctor bookings.
+
+### Admissions, Rooms, Wards, and Beds
+
+Admissions connect patients to departments, assigned doctors, wards, rooms, and beds. Bed allocation logic tracks availability, occupancy, transfers, discharge, and historical allocation records.
+
+### Clinical Workflows
+
+Clinical encounter workflows cover chief complaints, doctor notes, nurse notes, vitals, diagnoses, primary diagnosis marking, treatment plans, linked prescriptions, linked lab orders, and encounter completion.
+
+### Pharmacy and Inventory
+
+The pharmacy module manages medicines, suppliers, stock batches, expiry dates, quantity on hand, reorder levels, costs, selling prices, stock adjustments, dispensing rules, and inventory alerts.
+
+### Laboratory
+
+The lab module supports test catalogs, multi-test lab orders, technician assignment, reference ranges, result statuses, critical values, and order completion.
+
+### Billing
+
+Billing supports invoice creation, invoice items, service charges, room charges, medication charges, lab charges, consultation fees, tax, discount, outstanding balances, full payments, and partial payments.
+
+### Reports and Analytics
+
+Reports use dashboard cards and Recharts visualizations for hospital KPIs, including occupancy, revenue, appointments, inventory, lab workload, and patient growth.
+
+## Project Structure
+
+```text
+app/                  App Router pages, layouts, and API routes
+components/           Layout, forms, tables, cards, charts, and modals
+lib/actions/          Server actions for guarded mutations
+lib/services/         Domain service layer
+lib/supabase/         Supabase browser/server/middleware clients
+lib/validations/      Zod schemas
+lib/utils/            Permissions, formatting, date helpers, constants
+supabase/migrations/  Database schema
+supabase/rls.sql      Row Level Security policies
+supabase/views.sql    Reporting views
+types/                Shared TypeScript types
+```
+
+## Running Locally
 
 ```bash
 npm install
@@ -39,13 +137,13 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Open:
 
-If Supabase environment variables are not configured, much of the UI falls back to realistic local demo data so product review can continue before infrastructure setup.
+```text
+http://localhost:3000
+```
 
-## Environment Variables
-
-Create `.env.local` from `.env.example`:
+Required environment variables:
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
@@ -54,85 +152,25 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-Security notes:
+Keep real `.env` files out of Git. Use `.env.example` only as a template.
 
-- Never commit real `.env` or `.env.local` files.
-- `NEXT_PUBLIC_SUPABASE_URL` must be the bare project URL, not `/rest/v1`.
-- `SUPABASE_SERVICE_ROLE_KEY` is server-only. Do not expose it with a `NEXT_PUBLIC_` prefix.
+## Database Setup
 
-## Supabase Setup
+Create a Supabase project, then apply:
 
-1. Create a new Supabase project.
-2. In Supabase Dashboard, open SQL Editor.
-3. Run the schema migration:
-
-```sql
--- Paste and run:
--- supabase/migrations/0001_medimade_hms_schema.sql
+```text
+supabase/migrations/0001_medimade_hms_schema.sql
+supabase/rls.sql
+supabase/views.sql
 ```
 
-4. Run optional view definitions if you want to refresh report views separately:
+You can apply these with the Supabase SQL Editor or through your preferred migration workflow. For existing databases, review enum/table changes, back up the database, and apply migrations in order.
+
+## Initial Admin Profile
+
+After creating a Supabase Auth user, add a matching profile row for that user. Replace the placeholder values with your own hospital and Auth user IDs.
 
 ```sql
--- Paste and run:
--- supabase/views.sql
-```
-
-5. Run optional RLS policy file if applying policies separately:
-
-```sql
--- Paste and run:
--- supabase/rls.sql
-```
-
-The main migration includes the production schema, enums, indexes, triggers, audit-related structures, and storage bucket foundations. The RLS file contains helper functions and hospital-scoped policies for tenant isolation.
-
-## Database Migration Instructions
-
-For a fresh project, run:
-
-```bash
-supabase db push
-```
-
-or paste `supabase/migrations/0001_medimade_hms_schema.sql` into the SQL Editor.
-
-For an existing project:
-
-1. Back up the database.
-2. Review enum changes and table definitions.
-3. Apply migrations in timestamp order.
-4. Re-run `supabase/rls.sql` if policies were changed.
-5. Re-run `supabase/views.sql` if reporting views were changed.
-
-## Seed Data Instructions
-
-Development seed data is available at:
-
-- `supabase/seed.sql`
-- `supabase/seed/seed.sql`
-
-To seed via SQL Editor, paste and run `supabase/seed.sql`.
-
-To seed with Supabase CLI, configure the local project and run the seed file through `psql` or your preferred SQL runner after migrations are applied.
-
-The seed creates NorthBridge Medical Center in New York with departments, staff, doctors, nurses, patients, admissions, beds, appointments, encounters, vitals, diagnoses, treatments, medications, inventory, suppliers, stock movements, prescriptions, lab orders, invoices, payments, notifications, and audit logs.
-
-## Admin Account Creation
-
-1. In Supabase Dashboard, go to Authentication -> Users.
-2. Create a confirmed user with:
-   - Email: `admin@gmail.com`
-   - Password: `DemoAdmin2026!`
-3. Insert or update the matching `profiles` row:
-
-```sql
-with demo_auth_user as (
-  select id
-  from auth.users
-  where lower(email) = 'admin@gmail.com'
-  limit 1
-)
 insert into public.profiles (
   auth_user_id,
   hospital_id,
@@ -141,16 +179,15 @@ insert into public.profiles (
   role,
   phone,
   is_active
-)
-select
-  id,
-  '00000000-0000-4000-8000-000000000001',
-  'NorthBridge Administrator',
-  'admin@gmail.com',
+) values (
+  'AUTH_USER_UUID_HERE',
+  'HOSPITAL_UUID_HERE',
+  'Hospital Administrator',
+  'admin@example.com',
   'hospital_admin',
-  '+1-212-555-0100',
+  '+1-000-000-0000',
   true
-from demo_auth_user
+)
 on conflict (auth_user_id) do update set
   hospital_id = excluded.hospital_id,
   full_name = excluded.full_name,
@@ -160,34 +197,20 @@ on conflict (auth_user_id) do update set
   is_active = true;
 ```
 
-For global platform access, use `role = 'super_admin'`. Super admins can access all hospitals through RLS helper policies.
+Use `super_admin` only for platform-level access across hospitals.
 
-The login page displays the same demo account by default. Override the visible demo credentials with `NEXT_PUBLIC_DEMO_LOGIN_EMAIL` and `NEXT_PUBLIC_DEMO_LOGIN_PASSWORD` in Vercel if you change them in Supabase Auth.
+## Deployment
 
-## Vercel Deployment
+The app is ready for deployment on Vercel.
 
-1. Push this repository to GitHub.
-2. Import the project in Vercel.
-3. Set Framework Preset to Next.js.
-4. Add environment variables from `.env.example`.
-5. Set `NEXT_PUBLIC_APP_URL` to the deployed Vercel URL.
+1. Push the repository to GitHub.
+2. Import it into Vercel.
+3. Add the required environment variables in Vercel Project Settings.
+4. Set `NEXT_PUBLIC_APP_URL` to the deployed URL.
+5. Add the deployed URL to Supabase Auth redirect URLs.
 6. Deploy.
 
-The included `vercel.json` uses:
-
-```json
-{
-  "framework": "nextjs",
-  "regions": ["iad1"],
-  "buildCommand": "npm run build"
-}
-```
-
-After deployment, add the Vercel URL to Supabase Auth redirect URLs.
-
-## Verification
-
-Run these before every deployment:
+Before deployment, verify:
 
 ```bash
 npm run typecheck
@@ -195,26 +218,7 @@ npm run lint
 npm run build
 ```
 
-## Important Paths
+## Why This Project Matters
 
-- App routes: `app/(dashboard)`
-- API routes: `app/api`
-- UI components: `components`
-- Server actions: `lib/actions`
-- Services: `lib/services`
-- Validation schemas: `lib/validations`
-- Supabase clients: `lib/supabase`
-- Database schema: `supabase/migrations/0001_medimade_hms_schema.sql`
-- RLS policies: `supabase/rls.sql`
-- Reporting views: `supabase/views.sql`
-- Seed data: `supabase/seed.sql`
+Medimade HMS shows practical full-stack engineering across product design, database modeling, authentication, authorization, healthcare domain workflows, analytics, and deployment readiness. It is structured to demonstrate production thinking: clear modules, typed boundaries, validation, secure data access, reusable UI, and workflow-aware business logic.
 
-## Security Model
-
-- Dashboard pages are protected by server-side auth checks.
-- API routes use `requireServiceContext`.
-- Server actions use `guardAction`.
-- Client-supplied hospital IDs are not trusted by guarded mutations.
-- Supabase RLS scopes records by `profiles.hospital_id`.
-- `super_admin` can access all hospitals.
-- Audit logs are controlled by server-side writes and RLS policy restrictions.
