@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 200 33% 98%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --primary: 188 88% 30%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 199 89% 96%;
+  --secondary-foreground: 200 90% 22%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 166 76% 95%;
+  --accent-foreground: 174 72% 22%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 187 82% 31%;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+  text-rendering: optimizeLegibility;
+}
+
+.medical-grid {
+  background-image:
+    linear-gradient(to right, rgb(8 145 178 / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(8 145 178 / 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+::selection {
+  background: rgb(20 184 166 / 0.2);
+}
+
+.dashboard-surface {
+  background:
+    radial-gradient(circle at top right, rgb(14 165 233 / 0.08), transparent 30rem),
+    linear-gradient(180deg, rgb(255 255 255 / 0.85), rgb(248 250 252 / 0.95));
+}

@@ -1,0 +1,2 @@
+-- The canonical Medimade HMS development seed is ../seed.sql.
+-- Keep this file only for compatibility with older project notes that referenced supabase/seed/seed.sql.

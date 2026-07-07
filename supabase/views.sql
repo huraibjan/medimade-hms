@@ -1,0 +1,2 @@
+-- View definitions are included in supabase/migrations/0001_medimade_hms_schema.sql.
+-- This file is kept as a conventional entrypoint for teams that split schema deployment.
